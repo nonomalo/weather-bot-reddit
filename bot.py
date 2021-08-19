@@ -21,11 +21,24 @@ def main():
     # have bot respond to comments with its name
     for comment in subreddit.stream.comments():
         if comment.body.startswith("!current-weather-bot"):
-            city = comment.body.split()[1]
+            city = get_city(comment)
             full_url = get_api_url(city)
             weather = get_weather(full_url)
             formatted_weather = format_weather(weather)
             comment.reply(formatted_weather)
+
+def get_city(comment):
+    """Get full city name from comment"""
+    # create list of string containing each word in comment
+    comment_as_list = comment.body.split()
+    city = comment_as_list[1]
+
+    # if the city is multiple words long
+    if len(comment_as_list) > 2:
+        for word in range(2, len(comment_as_list)):
+            city += " " + comment_as_list[word]
+
+    return city
 
 def get_api_url(city):
     """Get full url for api call"""
