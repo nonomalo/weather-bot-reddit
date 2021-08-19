@@ -24,6 +24,11 @@ def get_weather(full_url):
     weather = [city, temperature, conditions, humidity]
     return weather
 
+def format_weather(weather):
+    formatted_weather = ""
+    for element in weather:
+        formatted_weather += " " + element + "\n"
+
 
 reddit = praw.Reddit(username = config.username,
                     password = config.password,
@@ -44,4 +49,5 @@ for comment in subreddit.stream.comments():
         city = comment.body.split()[1]
         full_url = get_api_url(city)
         weather = get_weather(full_url)
-        comment.reply(weather)
+        formatted_weather = format_weather(weather)
+        comment.reply(formatted_weather)
