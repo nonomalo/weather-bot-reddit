@@ -4,6 +4,9 @@ import requests
 import json
 
 def main():
+    """Respond to comments with the bot's name (!current-weather-bot) and a city on r/all with the
+    name of the city, temperature (fahrenheit), conditions, and humidity."""
+    # get credentials
     reddit = praw.Reddit(username = config.username,
                         password = config.password,
                         client_id = config.client_id,
@@ -12,6 +15,7 @@ def main():
 
     reddit.validate_on_submit=True
 
+    # have bot work on every subreddit
     subreddit = reddit.subreddit("all")
 
     # have bot respond to comments with its name
@@ -24,14 +28,17 @@ def main():
             comment.reply(formatted_weather)
 
 def get_api_url(city):
+    """Get full url for api call"""
     weather_url = "http://api.openweathermap.org/data/2.5/weather?"
     return weather_url + f"q={city}&appid={config.weather_api}"
 
 def get_weather(full_url):
-    # request weather info for desired city and give response
+    """Call on OpenWeatherMap to retrieve city, temperature, conditions, and humidity"""
+    # request weather info for desired city and get response
     weather_request = requests.get(full_url)
     weather_data = weather_request.json()
 
+    # collect all desired weather conditions using the response
     city = f"**City:** {weather_data['name']}, {weather_data['sys']['country']}"
     temperature = f"**Temperature:** {get_temperature(weather_data)}\N{DEGREE SIGN}F"
     conditions = f"**Conditions:** {weather_data['weather'][0]['description']}"
