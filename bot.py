@@ -33,21 +33,26 @@ def get_weather(full_url):
     weather_data = weather_request.json()
 
     city = f"**City:** {weather_data['name']}, {weather_data['sys']['country']}"
-
-    temperature_kelvin = weather_data['main']['temp']
-    temperature_fahrenheit = round(temperature_kelvin - 273, 1)
-    temperature = f"**Temperature:** {temperature_fahrenheit}\N{DEGREE SIGN}F"
-
+    temperature = f"**Temperature:** {get_temperature(weather_data)}\N{DEGREE SIGN}F"
     conditions = f"**Conditions:** {weather_data['weather'][0]['description']}"
-
     humidity = f"**Humidity:** {weather_data['main']['humidity']}%"
+
     weather = [city, temperature, conditions, humidity]
     return weather
 
+def get_temperature(weather):
+    """Convert temperature from Kelvin to Fahrenheit"""
+    kelvin = weather['main']['temp']
+    celsius = kelvin - 273.15
+    fahrenheit = celsius * (9/5) + 32
+    return round(fahrenheit, 1)
+
 def format_weather(weather):
+    """Concatenate list of string and add a space inbetween"""
     formatted_weather = ""
     for element in weather:
         formatted_weather += " " + element
+    return formatted_weather
 
 if __name__ == "__main__":
     main()
