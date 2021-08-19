@@ -27,7 +27,18 @@ full_url = weather_url + f"q=Seattle&appid={config.weather_api}"
 #        response = f"City: {weather_request.name}"
 #        comment.reply(weather_request)
 
+# request weather info for desired city and give response
 weather_request = requests.get(full_url)
 weather_data = weather_request.json()
-response = f"City: {weather_data['name']}"
-print(response)
+
+city = f"City: {weather_data['name']}"
+
+temperature_kelvin = weather_data['main']['temp']
+temperature_fahrenheit = round(temperature_kelvin - 273, 1)
+temperature = f"Temperature: {temperature_fahrenheit}\N{DEGREE SIGN}F"
+
+conditions = f"Conditions: {weather_data['weather'][0]['description']}"
+
+humidity = f"Humidity: {weather_data['main']['humidity']}%"
+
+print(city, temperature, conditions, humidity)
