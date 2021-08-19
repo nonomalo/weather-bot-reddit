@@ -32,7 +32,7 @@ def get_weather(full_url):
     weather_request = requests.get(full_url)
     weather_data = weather_request.json()
 
-    city = f"City: {weather_data['name']}"
+    city = f"City: {weather_data['name']}, {weather_data['sys']['country']}"
 
     temperature_kelvin = weather_data['main']['temp']
     temperature_fahrenheit = round(temperature_kelvin - 273, 1)
@@ -47,7 +47,7 @@ def get_weather(full_url):
 def format_weather(weather):
     formatted_weather = ""
     for element in weather:
-        formatted_weather += " " + element + "\n"
+        formatted_weather += " " + element
 
 if __name__ == "__main__":
     main()
