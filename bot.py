@@ -12,10 +12,7 @@ def main():
 
     reddit.validate_on_submit=True
 
-    subreddit = reddit.subreddit("test")
-
-    # make a post on "test" subreddit
-    subreddit.submit("Test Submission", url="https://reddit.com")
+    subreddit = reddit.subreddit("all")
 
     # have bot respond to comments with its name
     for comment in subreddit.stream.comments():
