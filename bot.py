@@ -3,6 +3,29 @@ import config
 import requests
 import json
 
+def main():
+    reddit = praw.Reddit(username = config.username,
+                        password = config.password,
+                        client_id = config.client_id,
+                        weather_api = config.weather_api,
+                        user_agent = "current-weather-bot v0.0.1")
+
+    reddit.validate_on_submit=True
+
+    subreddit = reddit.subreddit("test")
+
+    # make a post on "test" subreddit
+    subreddit.submit("Test Submission", url="https://reddit.com")
+
+    # have bot respond to comments with its name
+    for comment in subreddit.stream.comments():
+        if comment.body.startswith("!current-weather-bot"):
+            city = comment.body.split()[1]
+            full_url = get_api_url(city)
+            weather = get_weather(full_url)
+            formatted_weather = format_weather(weather)
+            comment.reply(formatted_weather)
+
 def get_api_url(city):
     weather_url = "http://api.openweathermap.org/data/2.5/weather?"
     return weather_url + f"q={city}&appid={config.weather_api}"
@@ -29,25 +52,5 @@ def format_weather(weather):
     for element in weather:
         formatted_weather += " " + element + "\n"
 
-
-reddit = praw.Reddit(username = config.username,
-                    password = config.password,
-                    client_id = config.client_id,
-                    weather_api = config.weather_api,
-                    user_agent = "current-weather-bot v0.0.1")
-
-reddit.validate_on_submit=True
-
-subreddit = reddit.subreddit("test")
-
-# make a post on "test" subreddit
-subreddit.submit("Test Submission", url="https://reddit.com")
-
-# have bot respond to comments with its name
-for comment in subreddit.stream.comments():
-    if comment.body.startswith("!current-weather-bot"):
-        city = comment.body.split()[1]
-        full_url = get_api_url(city)
-        weather = get_weather(full_url)
-        formatted_weather = format_weather(weather)
-        comment.reply(formatted_weather)
+if __name__ == "__main__":
+    main()
