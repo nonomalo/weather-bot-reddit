@@ -6,7 +6,7 @@ import json
 def main():
     """Respond to comments with the bot's name (!current-weather-bot) and a city on r/all with the
     name of the city, temperature (fahrenheit), conditions, and humidity."""
-    # get credentials
+    # get credentials for bot account
     reddit = praw.Reddit(username = config.username,
                         password = config.password,
                         client_id = config.client_id,
@@ -24,8 +24,7 @@ def main():
             city = get_city(comment)
             full_url = get_api_url(city)
             weather = get_weather(full_url)
-            formatted_weather = format_weather(weather)
-            comment.reply(formatted_weather)
+            comment.reply(weather)
 
 def get_city(comment):
     """Get full city name from comment"""
@@ -47,7 +46,7 @@ def get_api_url(city):
 
 def get_weather(full_url):
     """Call on OpenWeatherMap to retrieve city, temperature, conditions, and humidity"""
-    # request weather info for desired city and get response
+    # request weather info for desired city and save response
     weather_request = requests.get(full_url)
     weather_data = weather_request.json()
 
@@ -58,7 +57,8 @@ def get_weather(full_url):
     humidity = f"**Humidity:** {weather_data['main']['humidity']}%"
 
     weather = [city, temperature, conditions, humidity]
-    return weather
+    formatted_weather = format_weather(weather)
+    return formatted_weather
 
 def get_temperature(weather):
     """Convert temperature from Kelvin to Fahrenheit"""
