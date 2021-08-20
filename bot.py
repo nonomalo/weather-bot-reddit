@@ -6,13 +6,7 @@ import json
 def main():
     """Respond to comments with the bot's name (!current-weather-bot) and a city on r/all with the
     name of the city, temperature (fahrenheit), conditions, and humidity."""
-    # get credentials for bot account
-    reddit = praw.Reddit(username = config.username,
-                        password = config.password,
-                        client_id = config.client_id,
-                        weather_api = config.weather_api,
-                        user_agent = "current-weather-bot v0.0.1")
-
+    reddit = get_credentials()
     reddit.validate_on_submit=True
 
     # have bot work on every subreddit
@@ -25,6 +19,16 @@ def main():
             full_url = get_api_url(city)
             weather = get_weather(full_url)
             comment.reply(weather)
+
+def get_credentials():
+    """Get credentials for bot account"""
+    reddit = praw.Reddit(username = config.username,
+                        password = config.password,
+                        client_id = config.client_id,
+                        weather_api = config.weather_api,
+                        user_agent = "current-weather-bot v0.0.1")
+    return reddit
+
 
 def get_city(comment):
     """Get full city name from comment"""
