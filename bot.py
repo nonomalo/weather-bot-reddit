@@ -65,7 +65,8 @@ def get_weather(full_url):
         formatted_weather = format_weather(weather)
         return formatted_weather
     else:
-        return "Sorry, you have entered in the city incorrectly."
+        return "Sorry, you have entered in the city incorrectly. Please call in this format: !current-weather not city \
+        OR !current-weather-bot city, country"
 
 def check_for_error(request):
     """Check if call on OpenWeatherMap was successful or not"""
