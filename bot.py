@@ -25,10 +25,10 @@ def get_credentials():
     reddit = praw.Reddit(username = config.username,
                         password = config.password,
                         client_id = config.client_id,
+                        client_secret = config.client_secret,
                         weather_api = config.weather_api,
                         user_agent = "current-weather-bot v0.0.1")
     return reddit
-
 
 def get_city(comment):
     """Get full city name from comment"""
@@ -54,15 +54,25 @@ def get_weather(full_url):
     weather_request = requests.get(full_url)
     weather_data = weather_request.json()
 
-    # collect all desired weather conditions using the response
-    city = f"**City:** {weather_data['name']}, {weather_data['sys']['country']}"
-    temperature = f"**Temperature:** {get_temperature(weather_data)}\N{DEGREE SIGN}F"
-    conditions = f"**Conditions:** {weather_data['weather'][0]['description']}"
-    humidity = f"**Humidity:** {weather_data['main']['humidity']}%"
+    if check_for_error(weather_data) is False:
+        # collect all desired weather conditions using the response
+        city = f"**City:** {weather_data['name']}, {weather_data['sys']['country']}"
+        temperature = f"**Temperature:** {get_temperature(weather_data)}\N{DEGREE SIGN}F"
+        conditions = f"**Conditions:** {weather_data['weather'][0]['description']}"
+        humidity = f"**Humidity:** {weather_data['main']['humidity']}%"
 
-    weather = [city, temperature, conditions, humidity]
-    formatted_weather = format_weather(weather)
-    return formatted_weather
+        weather = [city, temperature, conditions, humidity]
+        formatted_weather = format_weather(weather)
+        return formatted_weather
+    else:
+        return "Sorry, you have entered in the city incorrectly."
+
+def check_for_error(request):
+    """Check if call on OpenWeatherMap was successful or not"""
+    if request == {"cod":"404","message":"city not found"}:
+        return True
+    else:
+        return False
 
 def get_temperature(weather):
     """Convert temperature from Kelvin to Fahrenheit"""
