@@ -15,8 +15,8 @@ def main():
     # have bot respond to comments with its name
     for comment in subreddit.stream.comments():
         if comment.body.startswith("!current-weather-bot"):
-            city = get_city(comment)
-            full_url = get_api_url(city)
+            location = get_location(comment)
+            full_url = get_api_url(location)
             weather = get_weather(full_url)
             comment.reply(weather)
 
@@ -30,18 +30,24 @@ def get_credentials():
                         user_agent = "current-weather-bot v0.0.1")
     return reddit
 
-def get_city(comment):
-    """Get full city name from comment"""
-    # create list of string containing each word in comment
-    comment_as_list = comment.body.split()
-    city = comment_as_list[1]
+def get_location(comment):
+    """Get full city name (and country if applicable) from comment"""
+    # remove bot call from string
+    location = comment.split.body('!current-weather-bot ', 1)[1]
 
-    # if the city is multiple words long
-    if len(comment_as_list) > 2:
-        for word in range(2, len(comment_as_list)):
-            city += " " + comment_as_list[word]
+    # if country code is included
+    if ',' in location:
+        country = get_country_code(location)
+        city = location.split(', ')[0]
+        return f"{city},{country}"
+    
+    # if comment just mentions city
+    else:
+        return location
 
-    return city
+def get_country_code(comment):
+    country = comment.split(', ', 1)[1]
+    return country
 
 def get_api_url(city):
     """Get full url for api call"""
@@ -65,8 +71,8 @@ def get_weather(full_url):
         formatted_weather = format_weather(weather)
         return formatted_weather
     else:
-        return "Sorry, you have entered in the city incorrectly. Please call in this format: !current-weather not city \
-        OR !current-weather-bot city, country"
+        return "Sorry, you have entered in the city incorrectly. Please call in this format: \
+        !current-weather-bot city OR !current-weather-bot city, country code"
 
 def check_for_error(request):
     """Check if call on OpenWeatherMap was successful or not"""
